@@ -26,9 +26,9 @@ class MakeFunc{
 	/**
 	 * @param string $pkg_name
 	 * 
-	 * @return MakeFunc
+	 * @return static
 	 */
-	public static function create(string $pkg_name):MakeFunc|null{
+	public static function create(string $pkg_name):?static{
 
 		if(is_null(static::$app))
 			static::$app = new self($pkg_name);
@@ -48,9 +48,9 @@ class MakeFunc{
 	}
 
 	/**
-	 * @return MakeFunc
+	 * @return static
 	 */
-	public static function singleton():MakeFunc|null{
+	public static function singleton():?static{
 
 		return static::$app;
 	}
@@ -79,7 +79,7 @@ class MakeFunc{
 	 * 
 	 * @return array|null
 	 */
-	public function get(string $pkg_name):array|null{
+	public function get(string $pkg_name):?array{
 
 		$pkg_name = trim($pkg_name);
 		if(!array_key_exists($pkg_name, $this->all))
