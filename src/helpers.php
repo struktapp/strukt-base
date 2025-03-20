@@ -2,7 +2,7 @@
 
 if(!function_exists("helper")){
 
-	function helper(string $pkg_name = null){		
+	function helper(?string $pkg_name){		
 
 		$mkfn = Strukt\MakeFunc::singleton();
 
