@@ -9,7 +9,7 @@ if(!function_exists("helper")){
 	 * 
 	 * @return MakeFunc|array|null
 	 */
-	function helper(?string $pkg_name):MakeFunc|array|null{		
+	function helper(?string $pkg_name = null):MakeFunc|array|null{		
 
 		$mkfn = MakeFunc::singleton();
 
