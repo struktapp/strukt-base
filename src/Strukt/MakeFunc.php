@@ -28,7 +28,7 @@ class MakeFunc{
 	 * 
 	 * @return MakeFunc
 	 */
-	public static function create(string $pkg_name):MakeFunc{
+	public static function create(string $pkg_name):MakeFunc|null{
 
 		if(is_null(static::$app))
 			static::$app = new self($pkg_name);
@@ -50,7 +50,7 @@ class MakeFunc{
 	/**
 	 * @return MakeFunc
 	 */
-	public static function singleton():MakeFunc{
+	public static function singleton():MakeFunc|null{
 
 		return static::$app;
 	}
