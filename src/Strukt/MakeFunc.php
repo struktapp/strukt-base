@@ -77,9 +77,9 @@ class MakeFunc{
 	/**
 	 * @param string $pkg_name
 	 * 
-	 * @return array
+	 * @return array|null
 	 */
-	public function get(string $pkg_name):array{
+	public function get(string $pkg_name):array|null{
 
 		$pkg_name = trim($pkg_name);
 		if(!array_key_exists($pkg_name, $this->all))
