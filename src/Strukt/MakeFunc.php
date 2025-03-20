@@ -61,7 +61,7 @@ class MakeFunc{
 	 * 
 	 * @return boolean
 	 */
-	public function register(string $fn_name):boolean{
+	public function register(string $fn_name):bool{
 
 		$fn_name = trim($fn_name);
 		if(!function_exists($fn_name)){
@@ -91,7 +91,7 @@ class MakeFunc{
 	/**
 	 * @return array
 	 */
-	public function listPackages(){
+	public function listPackages():array{
 
 		return array_keys($this->all);
 	}
