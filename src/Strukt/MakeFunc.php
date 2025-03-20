@@ -2,12 +2,18 @@
 
 namespace Strukt;
 
+/**
+ * @author Moderator <pitsolu@gmail.com>
+ */
 class MakeFunc{
 
 	public $all;
 	public $pkg_name;
 	public static $app = null;
 
+	/**
+	 * @param string $pkg_name
+	 */
 	public function __construct(string $pkg_name){
 
 		$this->pkg_name = $pkg_name = trim($pkg_name);
@@ -17,7 +23,12 @@ class MakeFunc{
 			$this->all[$pkg_name] = [];
 	}
 
-	public static function create(string $pkg_name){
+	/**
+	 * @param string $pkg_name
+	 * 
+	 * @return MakeFunc
+	 */
+	public static function create(string $pkg_name):MakeFunc{
 
 		if(is_null(static::$app))
 			static::$app = new self($pkg_name);
@@ -36,12 +47,21 @@ class MakeFunc{
 		return static::$app;
 	}
 
-	public static function singleton(){
+	/**
+	 * @return MakeFunc
+	 */
+	public static function singleton():MakeFunc{
 
 		return static::$app;
 	}
 
-	public function register(string $fn_name){
+
+	/**
+	 * @param string $fn_name
+	 * 
+	 * @return boolean
+	 */
+	public function register(string $fn_name):boolean{
 
 		$fn_name = trim($fn_name);
 		if(!function_exists($fn_name)){
@@ -54,7 +74,12 @@ class MakeFunc{
 		return false;
 	}
 
-	public function get(string $pkg_name){
+	/**
+	 * @param string $pkg_name
+	 * 
+	 * @return array
+	 */
+	public function get(string $pkg_name):array{
 
 		$pkg_name = trim($pkg_name);
 		if(!array_key_exists($pkg_name, $this->all))
@@ -63,6 +88,9 @@ class MakeFunc{
 		return $this->all[$pkg_name];
 	}
 
+	/**
+	 * @return array
+	 */
 	public function listPackages(){
 
 		return array_keys($this->all);

@@ -1,10 +1,17 @@
 <?php
 
+use Strukt\MakeFunc;
+
 if(!function_exists("helper")){
 
-	function helper(?string $pkg_name){		
+	/**
+	 * @param string $pkg_name
+	 * 
+	 * @return MakeFunc|array|null
+	 */
+	function helper(?string $pkg_name):MakeFunc|array|null{		
 
-		$mkfn = Strukt\MakeFunc::singleton();
+		$mkfn = MakeFunc::singleton();
 
 		if(!is_null($mkfn)){
 
@@ -25,7 +32,7 @@ if(!function_exists("helper")){
 			$pkg_name = "base";
 
 		if(!in_array($pkg_name, ["packages", "pkg", "pkgs"]))
-			return Strukt\MakeFunc::create($pkg_name);
+			return MakeFunc::create($pkg_name);
 
 		return null;
 	}
@@ -33,8 +40,13 @@ if(!function_exists("helper")){
 
 if(!function_exists("helper_add")){
 
-	function helper_add(string $fn_name){
+	/**
+	 * @param string $fn_name
+	 * 
+	 * @return boolean
+	 */
+	function helper_add(string $fn_name):bool{
 
-		return Strukt\MakeFunc::singleton()->register($fn_name);
+		return MakeFunc::singleton()->register($fn_name);
 	}
 }
