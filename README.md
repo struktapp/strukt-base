@@ -5,7 +5,7 @@ Base functionality for helpers
 
 ### Usage
 
-```php
+```sh
 psysh vendor/autoload.php
 ```
 
@@ -13,7 +13,10 @@ Inside `Psysh`
 
 ```php
 >>> helper()
-helper_add
+>>> helper("base")
+[
+	"helper_add"
+]
 ```
 
 ### Conclusion
