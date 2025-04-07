@@ -1,11 +1,11 @@
 <?php
 
-namespace Strukt;
+namespace Strukt\Base;
 
 /**
  * @author Moderator <pitsolu@gmail.com>
  */
-class MakeFunc{
+class Helper{
 
 	public $all;
 	public $pkg_name;

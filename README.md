@@ -12,8 +12,8 @@ psysh vendor/autoload.php
 Inside `Psysh`
 
 ```php
->>> helper()
->>> helper("base")
+# helper()
+helper("base")
 [
 	"helper_add"
 ]
