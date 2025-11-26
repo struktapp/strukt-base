@@ -19,7 +19,10 @@ class Env{
 	 */
 	public static function withFile(string $path=".env"):void{
 
-		$lines = file(phar($path)->adapt(), FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+		if(class_exists(Strukt\Phar::class))
+			$path = phar($path)->adapt();
+
+		$lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
 		foreach($lines as $line){
 
@@ -46,10 +49,10 @@ class Env{
 
 		$key = sprintf("env.%s", $key);
 		if(class_exists(Registry::class))
-			return Registry::getSingleton()->exists($key);
+			return Registry::getInstance()->exists($key);
 
-		if(!class_exists(Registry::class))
-			array_key_exists($key, static::$env);
+		if(negate(class_exists(Registry::class)))
+			return array_key_exists($key, static::$env);
 	}
 
 	/**
@@ -60,17 +63,16 @@ class Env{
 	public static function get(string $key):mixed{
 
 		$key = sprintf("env.%s", $key);
-
 		if(class_exists(Registry::class)){
 
-			$registry = Registry::getSingleton();
-			if(!$registry->exists($key))
-				new Raise(sprintf("Couldn't get [%s], may not be set by %s!", $key, __CLASS__));
+			$registry = Registry::getInstance();
+			if(negate($registry->exists($key)))
+				new Raise(sprintf("Couldn't get .env[%s]!", $key));
 
 			return $registry->get($key);
 		}
 
-		if(!class_exists(Registry::class))
+		if(negate(class_exists(Registry::class)))
 			return static::$env[$key];
 	}
 
@@ -86,7 +88,7 @@ class Env{
 		if(class_exists(Registry::class))
 			Registry::getInstance()->set($key, $val);
 
-		if(!class_exists(Registry::class))
+		if(negate(class_exists(Registry::class)))
 			static::$env[$key] = $val;
 	}
 }

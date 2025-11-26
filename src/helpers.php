@@ -111,22 +111,6 @@ if(helper_add("env")){
 	}
 }
 
-if(helper_add("raise")){
-
-	/**
-	 * Raise exception
-	 * 
-	 * @param string $error
-	 * @param integer $code
-	 * 
-	 * @return \Strukt\Raise
-	 */
-	function raise(string $error, int $code = 500):Raise{
-
-		return new Raise($error, $code);
-	}
-}
-
 if(helper_add("ref")){
 
 	/**
