@@ -144,6 +144,16 @@ class Ref{
 		};
 	}
 
+	public function props(){
+
+		$property_ls = [];
+		$properties = $this->class->getProperties();
+		foreach($properties as $property)
+			$property_ls[] = $property->getName(); 
+
+		return $property_ls;
+	}
+
 	/**
 	 * @param string $name
 	 * 
