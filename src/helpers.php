@@ -176,6 +176,7 @@ if(helper_add("env")){
 	 * 
 	 * @return string
 	 */
+	Strukt\Env::withFile();
 	function env(string $key, int|string|bool|null $val = null):string{
 
 		if(!is_null($val))
