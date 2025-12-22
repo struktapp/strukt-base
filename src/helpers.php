@@ -168,24 +168,6 @@ if(helper_add("timezone")){
 	}
 }
 
-if(helper_add("env")){
-
-	/**
-	 * @param string $key
-	 * @param mixed $val - can only be string|int|bool
-	 * 
-	 * @return string
-	 */
-	Strukt\Env::withFile();
-	function env(string $key, int|string|bool|null $val = null):string{
-
-		if(!is_null($val))
-			Env::set($key, $val);
-
-		return Env::get($key);
-	}
-}
-
 if(helper_add("negate")){
 
 	/**
@@ -218,6 +200,9 @@ use Symfony\Component\VarDumper\Dumper\HtmlDumper;
 use Symfony\Component\VarDumper\VarDumper;
 
 if(helper_add("dd")){
+
+	if(negate(class_exists(Symfony\Component\VarDumper\VarDumper::class)))
+		raise("fn[dd] requires symfony/var-dumper:6.4.x-dev!");
 
 	VarDumper::setHandler(function (mixed $var): void {
 	    $cloner = new VarCloner();
