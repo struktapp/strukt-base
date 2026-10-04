@@ -122,7 +122,7 @@ final class Ref
      *
      * @return \ReflectionClass<object> Reflected class.
      */
-    public function getRef(): \ReflectionClass
+    public function ref(): \ReflectionClass
     {
         return $this->class;
     }

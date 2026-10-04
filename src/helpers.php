@@ -34,7 +34,7 @@ if (!function_exists('helper')) {
         }
 
         if ($listRequest) {
-            return $package === null ? $registry->listPackages() : $registry->listPackages();
+            return $registry->listPackages();
         }
 
         $registered = $registry->get($package);

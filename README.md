@@ -224,7 +224,7 @@ Class and instance references expose:
 $reference->method(string $name): MethodReference
 $reference->props(): array
 $reference->prop(string $name): PropertyReference
-$reference->getRef(): ReflectionClass
+$reference->ref(): ReflectionClass
 $reference->getInstance(): ?object
 $reference->readyMade(object $instance): object
 $reference->make(mixed ...$args): Ref
@@ -240,14 +240,14 @@ method.
 ### FunctionReference
 
 ```php
-$reference->getRef(): ReflectionFunction
+$reference->ref(): ReflectionFunction
 $reference->invoke(mixed ...$args): mixed
 ```
 
 ### MethodReference
 
 ```php
-$reference->getRef(): ReflectionMethod
+$reference->ref(): ReflectionMethod
 $reference->getClosure(): Closure
 $reference->invoke(mixed ...$args): mixed
 ```
@@ -255,7 +255,7 @@ $reference->invoke(mixed ...$args): mixed
 ### PropertyReference
 
 ```php
-$reference->getRef(): ReflectionProperty
+$reference->ref(): ReflectionProperty
 $reference->set(mixed $value): void
 $reference->get(): mixed
 ```

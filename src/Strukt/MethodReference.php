@@ -20,7 +20,7 @@ final class MethodReference
      *
      * @return \ReflectionMethod Reflected method.
      */
-    public function getRef(): \ReflectionMethod
+    public function ref(): \ReflectionMethod
     {
         return $this->reflection;
     }

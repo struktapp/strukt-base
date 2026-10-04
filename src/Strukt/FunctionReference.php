@@ -17,7 +17,7 @@ final class FunctionReference
      *
      * @return \ReflectionFunction Reflected function.
      */
-    public function getRef(): \ReflectionFunction
+    public function ref(): \ReflectionFunction
     {
         return $this->reflection;
     }

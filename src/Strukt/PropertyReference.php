@@ -20,7 +20,7 @@ final class PropertyReference
      *
      * @return \ReflectionProperty Reflected property.
      */
-    public function getRef(): \ReflectionProperty
+    public function ref(): \ReflectionProperty
     {
         return $this->reflection;
     }
