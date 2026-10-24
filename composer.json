@@ -4,7 +4,9 @@
     "type": "library",
     "license": "MIT",
     "require": {
-        "php": ">=8.2"
+        "php": ">=8.2",
+        "psr/container": "^1.1 || ^2.0",
+        "symfony/var-dumper": "^7.0 || ^8.0"
     },
     "require-dev": {
         "pestphp/pest": "^4.0"
@@ -23,7 +25,8 @@
         }
     },
     "scripts": {
-        "test": "pest"
+        "test": "pest",
+        "lint": "find src examples tests -name '*.php' -print0 | xargs -0 -n1 php -l"
     },
     "config": {
         "allow-plugins": {

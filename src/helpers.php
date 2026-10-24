@@ -1,10 +1,12 @@
 <?php
 
 use Strukt\Alias;
+use Strukt\Container\Container;
 use Strukt\Env;
 use Strukt\Helper;
 use Strukt\Raise;
 use Strukt\Ref;
+use Symfony\Component\VarDumper\VarDumper;
 
 /** Base package helper functions. */
 
@@ -114,6 +116,39 @@ if (!function_exists('alias') && helper_add('alias')) {
     }
 }
 
+if (!function_exists('app') && helper_add('app')) {
+    /**
+     * Returns the shared container or resolves a binding from it.
+     *
+     * ```php
+     * app();                              // shared container
+     * app(Cache::class);                  // resolve a binding or autowire
+     * app(UserController::class, ['r' => $request]); // resolve with overrides
+     * ```
+     *
+     * @param string|null $abstract Identifier to resolve, or `null` for the container.
+     * @param array<string, mixed> $parameters Named constructor arguments to use directly.
+     * @return mixed Shared container, resolved value, or built instance.
+     *
+     * @throws \Psr\Container\NotFoundExceptionInterface When the identifier is unknown.
+     * @throws \Psr\Container\ContainerExceptionInterface When construction fails.
+     */
+    function app(?string $abstract = null, array $parameters = []): mixed
+    {
+        $container = Container::getInstance();
+
+        if ($abstract === null) {
+            return $container;
+        }
+
+        if ($parameters !== []) {
+            return $container->make($abstract, $parameters);
+        }
+
+        return $container->get($abstract);
+    }
+}
+
 if (!function_exists('env') && helper_add('env')) {
     /**
      * Reads or stores an environment value.
@@ -219,7 +254,13 @@ if (!function_exists('notnull') && helper_add('notnull')) {
 
 if (!function_exists('dd') && helper_add('dd')) {
     /**
-     * Dumps values and terminates execution.
+     * Dumps values with Symfony's VarDumper and terminates execution.
+     *
+     * symfony/var-dumper normally declares the global `dd()` first (its
+     * `Resources/functions/dump.php` is a Composer file-autoload), so this
+     * definition is skipped in the common case. It is only reached when that
+     * file is not loaded — for example under PsySH's bundled autoloader, which
+     * deduplicates the shared file identifier and never defines `dd()`.
      *
      * @param mixed ...$values Values to dump.
      * @return never Never returns.
@@ -227,7 +268,7 @@ if (!function_exists('dd') && helper_add('dd')) {
     function dd(mixed ...$values): never
     {
         foreach ($values as $value) {
-            var_dump($value);
+            VarDumper::dump($value);
         }
 
         exit(1);

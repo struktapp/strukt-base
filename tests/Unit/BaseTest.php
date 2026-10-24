@@ -54,8 +54,14 @@ test('base helper registry includes every base helper', function (): void {
         'timezone',
         'negate',
         'notnull',
-        'dd',
     );
+});
+
+test('dd and dump resolve to symfony/var-dumper when its functions file loads', function (): void {
+    expect(function_exists('dd'))->toBeTrue()
+        ->and(function_exists('dump'))->toBeTrue()
+        ->and(class_exists(\Symfony\Component\VarDumper\VarDumper::class))->toBeTrue()
+        ->and(helper('base'))->not->toContain('dd');
 });
 
 final class ReflectionFixture

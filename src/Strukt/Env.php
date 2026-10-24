@@ -12,19 +12,26 @@ final class Env
      * Loads key/value pairs from an environment file.
      *
      * Empty lines, `#` comments, `//` comments, and an optional `export`
-     * prefix are ignored. Values may be wrapped in matching quotes.
+     * prefix are ignored. Values may be wrapped in matching quotes. A key
+     * already exported in the process environment is skipped, so a real
+     * variable always wins over the file.
      *
      * @param string $path Environment file path.
+     * @param bool $required Whether a missing file throws; false tolerates it.
      * @return void
-     * @throws \InvalidArgumentException When the file does not exist.
+     * @throws \InvalidArgumentException When the required file does not exist.
      */
-    public static function withFile(string $path = '.env'): void
+    public static function withFile(string $path = '.env', bool $required = true): void
     {
         if (class_exists(Phar::class) && Phar::isPhar()) {
             $path = Phar::adapt($path);
         }
 
         if (!is_file($path)) {
+            if (!$required) {
+                return;
+            }
+
             throw new \InvalidArgumentException(sprintf('Environment file [%s] was not found.', $path));
         }
 
@@ -69,25 +76,37 @@ final class Env
     }
 
     /**
-     * Checks whether a key has been loaded.
+     * Checks whether a key is available.
+     *
+     * A key counts as available when it is exported in the process
+     * environment or loaded from an environment file.
      *
      * @param string $key Environment key.
      * @return bool True when the key exists.
      */
     public static function has(string $key): bool
     {
-        return array_key_exists($key, self::$values);
+        return getenv($key) !== false || array_key_exists($key, self::$values);
     }
 
     /**
      * Reads an environment value.
      *
+     * The process environment wins over anything loaded from a file, so an
+     * exported variable always takes precedence.
+     *
      * @param string $key Environment key.
      * @return string|int|bool Value associated with the key.
-     * @throws Raise When the key is not loaded.
+     * @throws Raise When the key is not available.
      */
     public static function get(string $key): string|int|bool
     {
+        $real = getenv($key);
+
+        if ($real !== false) {
+            return $real;
+        }
+
         if (!self::has($key)) {
             throw new Raise(sprintf("Couldn't get .env[%s].", $key));
         }

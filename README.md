@@ -7,12 +7,16 @@ Strukt Base
 
 Typed runtime foundations for Strukt packages. Base provides process-local
 aliases and environment values, cached reflection wrappers, helper
-registration, and a small runtime exception type.
+registration, a small runtime exception type, a PSR-11 dependency
+container exposed through app(), and Symfony-backed dd()/dump() debugging
+helpers.
 
 Requirements
 ------------
 
 - PHP 8.2 or newer
+- psr/container ^1.1 || ^2.0
+- symfony/var-dumper ^7.0 || ^8.0
 
 Installation
 ------------
@@ -146,13 +150,39 @@ notnull(mixed $value): bool
 
 negate() inverts a boolean. notnull() tests for strict non-nullness.
 
-### dd()
+### dd() and dump()
+
+`dd()` and `dump()` come from the symfony/var-dumper dependency and use
+Symfony's VarDumper for their output; `dd()` dumps each value and exits with
+status 1.
 
 ```php
 dd(mixed ...$values): never
+dump(mixed ...$values): mixed
 ```
 
-Dumps each value with var_dump() and exits with status 1.
+symfony/var-dumper declares these globals first, so base normally defers to
+them. Base also declares a guarded `dd()` fallback (using the same VarDumper)
+that only takes effect when symfony's functions file was not loaded — for
+example under PsySH, whose bundled autoloader deduplicates the shared file
+identifier and skips the project's `dump.php`.
+
+### app()
+
+```php
+app(?string $abstract = null, array $parameters = []): mixed
+```
+
+Resolves against the shared dependency container, or returns the container
+itself. With no argument it returns the process-wide container; with an
+identifier it resolves a binding or autowires the class; with parameters it
+builds the class using the named constructor overrides.
+
+```php
+app();                                    // the shared container
+app(Cache::class);                        // binding or autowired class
+app(Controller::class, ['id' => 7]);      // built with overrides
+```
 
 Helper inventory
 ---------------
@@ -160,9 +190,14 @@ Helper inventory
 The base package exposes these global helper functions:
 
 ```text
-helper, helper_add, is_map, alias, env, ref, raise, timezone,
-negate, notnull, dd
+helper, helper_add, is_map, alias, app, env, ref, raise, timezone,
+negate, notnull
 ```
+
+`dd()` and `dump()` are also available (via symfony/var-dumper). Because
+symfony declares them first, they are normally not registered in base's helper
+registry; `dd` is registered only when base's guarded fallback is the one that
+defines it.
 
 helper() is the registry bootstrap function, so the registry's base list starts
 with helper_add and then records the remaining conditionally-defined helpers.
@@ -295,6 +330,45 @@ Raise::reset(): void
 Each exception records its message in Raise::errors(). reset() clears the
 process-local error history.
 
+Container API
+-------------
+
+Strukt\Container\Container is a small PSR-11 container with constructor
+autowiring. It owns the process-wide instance returned by app() and by the
+framework container() helper.
+
+```php
+Container::getInstance(): Container
+Container::setInstance(?Container $container): ?Container
+
+$container->set(string $id, callable $factory): static      // shared
+$container->factory(string $id, callable $factory): static  // per resolve
+$container->instance(string $id, mixed $value): static      // prebuilt
+$container->alias(string $alias, string $id): static        // pointer
+$container->get(string $id): mixed
+$container->has(string $id): bool
+$container->make(string $class, array $parameters = []): object
+```
+
+get() returns a binding or autowires the class; make() reflects the
+constructor and resolves each parameter from a named override, then the
+container, then a default. Missing identifiers throw
+Strukt\Container\NotFoundException; failed construction throws
+Strukt\Container\ContainerException (both PSR-11 exceptions).
+
+```php
+use Strukt\Container\Container;
+
+$container = new Container();
+$container->set(Mailer::class, fn (Container $c) => new Mailer($c->get(Transport::class)));
+
+$mailer = $container->get(Mailer::class);              // shared
+$user = $container->make(User::class, ['id' => 7]);    // autowired + override
+```
+
+The container requires psr/container, which supplies the two PSR-11
+interfaces it implements.
+
 Performance notes
 -----------------
 
@@ -311,4 +385,21 @@ Testing
 
 ```sh
 composer test
+composer lint
 ```
+
+Examples
+--------
+
+Runnable container walk-throughs live in `examples/container/`, built around a
+small order-service domain (repository, payment gateway, notifier, and an
+`OrderService` that depends only on their interfaces).
+
+```sh
+php examples/container/06-order-checkout.php
+```
+
+See `examples/README.md` for the directory index and
+`examples/container/README.md` for the full list and the container mental
+model.
+
